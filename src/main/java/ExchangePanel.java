@@ -5,13 +5,13 @@ import org.jsoup.select.Elements;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class ExchangePanel extends JPanel {
 
     private ImageIcon background;
     private Document document;
-    private JLabel jLabel1,jLabel2;
+    private JLabel coinValueLabel, afterCalculate;
+    private boolean isRunning = false;
 
     public ExchangePanel(int x,int y,int width,int hieght){
         this.setBounds(x, y, width, hieght);
@@ -27,135 +27,136 @@ public class ExchangePanel extends JPanel {
         int yButtonCulculate=400;
         int dx=120;
 
-        JButton jButton1=createBotton(xButton,yButton,"usd-euro");
-        this.add(jButton1);
-        jLabel1=new JLabel();
-        jLabel2=new JLabel();
-        jLabel1.setBounds(100,300,100,50);
-        this.add(jLabel1);
-        jLabel1.setVisible(false);
+        JButton usdNis=createBotton(xButton,yButton,"usd-nis");
+        this.add(usdNis);
+        coinValueLabel =new JLabel();
+        afterCalculate =new JLabel();
+        coinValueLabel.setBounds(100,300,100,50);
+        this.add(coinValueLabel);
+        coinValueLabel.setVisible(false);
         JTextField usernameTextField = new JTextField();
         usernameTextField.setBounds(200,300,100,50);
         this.add(usernameTextField);
         usernameTextField.setVisible(false);
-        jLabel2.setBounds(200,450,100,50);
-        this.add(jLabel2);
-        jLabel1.setVisible(false);
-        JButton jButton2=createBotton(xButton+dx,yButton,"nis-euro");
-        this.add(jButton2);
-        JButton jButton3=createBotton(xButton+2*dx,yButton,"usd-euro");
-        this.add(jButton3);
-        JButton jButton4=createBotton(xButton+3*dx,yButton,"usd-euro");
-        this.add(jButton4);
-        JButton jButton5=createBotton(xButton+4*dx,yButton,"usd-euro");
-        this.add(jButton5);
-        JButton jButton6=createBotton(xButtonReset,yButtonReset,"reset");
-        jButton6.setBackground(Color.CYAN);
-        this.add(jButton6);
-        jButton6.setVisible(false);
-        JButton jButton7 = createBotton(xButtonCulculate,yButtonCulculate,"culculate_exchange");
-        jButton7.setBackground(Color.CYAN);
-        this.add(jButton7);
-        jButton7.setVisible(false);
+        afterCalculate.setBounds(200,450,100,50);
+        this.add(afterCalculate);
+        coinValueLabel.setVisible(false);
+        JButton euroNis=createBotton(xButton+dx,yButton,"euro-nis");
+        this.add(euroNis);
+        JButton euroDollar=createBotton(xButton+2*dx,yButton,"euro-dollar");
+        this.add(euroDollar);
+        JButton euroPound=createBotton(xButton+3*dx,yButton,"euro-pound");
+        this.add(euroPound);
+        JButton poundNis=createBotton(xButton+4*dx,yButton,"pound-nis");
+        this.add(poundNis);
+        JButton reset=createBotton(xButtonReset,yButtonReset,"reset");
+        reset.setBackground(Color.CYAN);
+        this.add(reset);
+        reset.setVisible(false);
+        JButton culculateExchange = createBotton(xButtonCulculate,yButtonCulculate,"culculate_exchange");
+        culculateExchange.setBackground(Color.CYAN);
+        this.add(culculateExchange);
+        culculateExchange.setVisible(false);
 
-        jButton1.addActionListener( (event)->{
-            new Thread(()->{
-                this.setFocusable(true);
-                this.requestFocus();
-                while (jLabel1!=null){
-                    try {
-                        this.document= Jsoup.connect("https://il.investing.com/currencies/streaming-forex-rates-majors").get();
-                        Element topArticleElement=this.document.getElementById("pair_63");
-                        Elements dolar=topArticleElement.getElementsByClass("pid-63-bid");
-                        jLabel1.setText("" + dolar.get(0).text() + "");
-                        jLabel1.setBackground(Color.BLUE);
-                        jLabel1.setOpaque(true);
-                        Thread.sleep(1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    repaint();
-                }
-            }).start();
-                jLabel1.setVisible(true);
+        usdNis.addActionListener( (event)->{
+                setRunning(true);
+                run("pair_63","pid-63-bid");
+                coinValueLabel.setVisible(true);
                 usernameTextField.setVisible(true);
-                jButton2.setVisible(false);
-                jButton3.setVisible(false);
-                jButton4.setVisible(false);
-                jButton5.setVisible(false);
-                jButton6.setVisible(true);
-                jButton7.setVisible(true);
+                euroNis.setVisible(false);
+                euroDollar.setVisible(false);
+                euroPound.setVisible(false);
+                poundNis.setVisible(false);
+                reset.setVisible(true);
+            culculateExchange.setVisible(true);
                 System.out.println("done");
         });
-        jButton2.addActionListener((event)->{
-            Element topArticleElement=this.document.getElementById("pair_63");
-            Elements dolar=topArticleElement.getElementsByClass("pid-63-bid");
-            jLabel1.setText("nis");
-            jLabel1.setVisible(true);
+        euroNis.addActionListener((event)->{
+            setRunning(true);
+            run("pair_64","pid-64-bid");
+            coinValueLabel.setVisible(true);
             usernameTextField.setVisible(true);
-            jButton1.setVisible(false);
-            jButton3.setVisible(false);
-            jButton4.setVisible(false);
-            jButton5.setVisible(false);
-            jButton6.setVisible(true);
-            jButton7.setVisible(true);
+            usdNis.setVisible(false);
+            euroDollar.setVisible(false);
+            euroPound.setVisible(false);
+            poundNis.setVisible(false);
+            reset.setVisible(true);
+            culculateExchange.setVisible(true);
 
         });
-        jButton3.addActionListener((event)->{
-            jLabel1.setText("nis");
-            jLabel1.setVisible(true);
+        euroDollar.addActionListener((event)->{
+            setRunning(true);
+            run("pair_1","pid-1-bid");
+            coinValueLabel.setVisible(true);
             usernameTextField.setVisible(true);
-            jButton1.setVisible(false);
-            jButton2.setVisible(false);
-            jButton4.setVisible(false);
-            jButton5.setVisible(false);
-            jButton6.setVisible(true);
-            jButton7.setVisible(true);
+            usdNis.setVisible(false);
+            euroNis.setVisible(false);
+            euroPound.setVisible(false);
+            poundNis.setVisible(false);
+            reset.setVisible(true);
+            culculateExchange.setVisible(true);
         });
-        jButton4.addActionListener((event)->{
-            jLabel1.setText("nis");
-            jLabel1.setVisible(true);
+        euroPound.addActionListener((event)->{
+            setRunning(true);
+            run("pair_6","pid-6-bid");
+            coinValueLabel.setVisible(true);
             usernameTextField.setVisible(true);
-            jButton1.setVisible(false);
-            jButton2.setVisible(false);
-            jButton3.setVisible(false);
-            jButton5.setVisible(false);
-            jButton6.setVisible(true);
-            jButton7.setVisible(true);
+            usdNis.setVisible(false);
+            euroNis.setVisible(false);
+            euroDollar.setVisible(false);
+            poundNis.setVisible(false);
+            reset.setVisible(true);
+            culculateExchange.setVisible(true);
         });
-        jButton5.addActionListener((event)->{
-            jLabel1.setText("nis");
-            jLabel1.setVisible(true);
+        poundNis.addActionListener((event)->{
+            setRunning(true);
+            run("pair_65","pid-65-bid");
+            coinValueLabel.setVisible(true);
             usernameTextField.setVisible(true);
-            jButton1.setVisible(false);
-            jButton2.setVisible(false);
-            jButton3.setVisible(false);
-            jButton4.setVisible(false);
-            jButton6.setVisible(true);
-            jButton7.setVisible(true);
+            usdNis.setVisible(false);
+            euroNis.setVisible(false);
+            euroDollar.setVisible(false);
+            euroPound.setVisible(false);
+            reset.setVisible(true);
+            culculateExchange.setVisible(true);
         });
-        jButton6.addActionListener((event)->{
-            jButton1.setVisible(true);
-            jButton2.setVisible(true);
-            jButton3.setVisible(true);
-            jButton4.setVisible(true);
-            jButton5.setVisible(true);
-            jButton6.setVisible(false);
-            jButton7.setVisible(false);
-            jLabel1.setVisible(false);
-            jLabel2.setVisible(false);
+        reset.addActionListener((event)->{
+            usdNis.setVisible(true);
+            euroNis.setVisible(true);
+            euroDollar.setVisible(true);
+            euroPound.setVisible(true);
+            poundNis.setVisible(true);
+            reset.setVisible(false);
+            culculateExchange.setVisible(false);
+            coinValueLabel.setVisible(false);
+            afterCalculate.setVisible(false);
             usernameTextField.setVisible(false);
+            usernameTextField.setText("");
+            coinValueLabel.setText("");
+            afterCalculate.setText("");
+            setRunning(false);
+
 
         });
-        jButton7.addActionListener((event)->{
-            jLabel2.setText("" + (Double.parseDouble(usernameTextField.getText()) * Double.parseDouble(jLabel1.getText())) +"");
-            jLabel2.setVisible(true);
+        culculateExchange.addActionListener((event)->{
+            afterCalculate.setText("" + (Double.parseDouble(usernameTextField.getText()) * Double.parseDouble(coinValueLabel.getText())) +"");
+            afterCalculate.setVisible(true);
+            afterCalculate.setBackground(Color.WHITE);
+            afterCalculate.setOpaque(true);
         });
 
 
 
 
 
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
     protected void paintComponent(Graphics graphics) {
@@ -176,7 +177,25 @@ public class ExchangePanel extends JPanel {
 //        return jLabel;
 //    }
 
-    public void run(){
+    public void run(String s1,String s2){
+        new Thread(()->{
+            this.setFocusable(true);
+            this.requestFocus();
+            while (isRunning){
+                try {
+                    this.document= Jsoup.connect("https://il.investing.com/currencies/streaming-forex-rates-majors").get();
+                    Element coinValue =this.document.getElementById("" + s1 + "");
+                    Elements coin= coinValue.getElementsByClass(""+ s2 + "");
+                    coinValueLabel.setText("" + coin.get(0).text() + "");
+                    coinValueLabel.setBackground(Color.WHITE);
+                    coinValueLabel.setOpaque(true);
+                    Thread.sleep(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                repaint();
+            }
+        }).start();
 
     }
 
