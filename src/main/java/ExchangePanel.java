@@ -10,6 +10,8 @@ import java.io.IOException;
 public class ExchangePanel extends JPanel {
 
     private ImageIcon background;
+    private Document document;
+    private JLabel jLabel1,jLabel2;
 
     public ExchangePanel(int x,int y,int width,int hieght){
         this.setBounds(x, y, width, hieght);
@@ -17,22 +19,18 @@ public class ExchangePanel extends JPanel {
         this.setLayout(null);
         this.setRequestFocusEnabled(true);
         this.background=new ImageIcon("background.jpg");
-        try{
-            Document document= Jsoup.connect("https://www.x-rates.com/").get();
-            Element topArticleElement=document.getElementById("flagelement");
-            System.out.println(topArticleElement);
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }
         int xButton=10;
         int yButton=10;
-        int xButtonReset=700;
+        int xButtonReset=650;
         int yButtonReset=300;
+        int xButtonCulculate=200;
+        int yButtonCulculate=400;
         int dx=120;
+
         JButton jButton1=createBotton(xButton,yButton,"usd-euro");
         this.add(jButton1);
-        JLabel jLabel1=new JLabel();
+        jLabel1=new JLabel();
+        jLabel2=new JLabel();
         jLabel1.setBounds(100,300,100,50);
         this.add(jLabel1);
         jLabel1.setVisible(false);
@@ -40,8 +38,9 @@ public class ExchangePanel extends JPanel {
         usernameTextField.setBounds(200,300,100,50);
         this.add(usernameTextField);
         usernameTextField.setVisible(false);
-
-
+        jLabel2.setBounds(200,450,100,50);
+        this.add(jLabel2);
+        jLabel1.setVisible(false);
         JButton jButton2=createBotton(xButton+dx,yButton,"nis-euro");
         this.add(jButton2);
         JButton jButton3=createBotton(xButton+2*dx,yButton,"usd-euro");
@@ -51,25 +50,46 @@ public class ExchangePanel extends JPanel {
         JButton jButton5=createBotton(xButton+4*dx,yButton,"usd-euro");
         this.add(jButton5);
         JButton jButton6=createBotton(xButtonReset,yButtonReset,"reset");
-
         jButton6.setBackground(Color.CYAN);
         this.add(jButton6);
         jButton6.setVisible(false);
-//        int yLable=200;
+        JButton jButton7 = createBotton(xButtonCulculate,yButtonCulculate,"culculate_exchange");
+        jButton7.setBackground(Color.CYAN);
+        this.add(jButton7);
+        jButton7.setVisible(false);
+
         jButton1.addActionListener( (event)->{
-            jLabel1.setText("usd");
-            jLabel1.setVisible(true);
-            usernameTextField.setVisible(true);
-            jButton2.setVisible(false);
-            jButton3.setVisible(false);
-            jButton4.setVisible(false);
-            jButton5.setVisible(false);
-            jButton6.setVisible(true);
-
-
-            System.out.println("done");
+            new Thread(()->{
+                this.setFocusable(true);
+                this.requestFocus();
+                while (jLabel1!=null){
+                    try {
+                        this.document= Jsoup.connect("https://il.investing.com/currencies/streaming-forex-rates-majors").get();
+                        Element topArticleElement=this.document.getElementById("pair_63");
+                        Elements dolar=topArticleElement.getElementsByClass("pid-63-bid");
+                        jLabel1.setText("" + dolar.get(0).text() + "");
+                        jLabel1.setBackground(Color.BLUE);
+                        jLabel1.setOpaque(true);
+                        Thread.sleep(1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    repaint();
+                }
+            }).start();
+                jLabel1.setVisible(true);
+                usernameTextField.setVisible(true);
+                jButton2.setVisible(false);
+                jButton3.setVisible(false);
+                jButton4.setVisible(false);
+                jButton5.setVisible(false);
+                jButton6.setVisible(true);
+                jButton7.setVisible(true);
+                System.out.println("done");
         });
         jButton2.addActionListener((event)->{
+            Element topArticleElement=this.document.getElementById("pair_63");
+            Elements dolar=topArticleElement.getElementsByClass("pid-63-bid");
             jLabel1.setText("nis");
             jLabel1.setVisible(true);
             usernameTextField.setVisible(true);
@@ -78,6 +98,7 @@ public class ExchangePanel extends JPanel {
             jButton4.setVisible(false);
             jButton5.setVisible(false);
             jButton6.setVisible(true);
+            jButton7.setVisible(true);
 
         });
         jButton3.addActionListener((event)->{
@@ -89,7 +110,7 @@ public class ExchangePanel extends JPanel {
             jButton4.setVisible(false);
             jButton5.setVisible(false);
             jButton6.setVisible(true);
-
+            jButton7.setVisible(true);
         });
         jButton4.addActionListener((event)->{
             jLabel1.setText("nis");
@@ -100,7 +121,7 @@ public class ExchangePanel extends JPanel {
             jButton3.setVisible(false);
             jButton5.setVisible(false);
             jButton6.setVisible(true);
-
+            jButton7.setVisible(true);
         });
         jButton5.addActionListener((event)->{
             jLabel1.setText("nis");
@@ -111,10 +132,26 @@ public class ExchangePanel extends JPanel {
             jButton3.setVisible(false);
             jButton4.setVisible(false);
             jButton6.setVisible(true);
+            jButton7.setVisible(true);
         });
         jButton6.addActionListener((event)->{
-            Main main=new Main();
+            jButton1.setVisible(true);
+            jButton2.setVisible(true);
+            jButton3.setVisible(true);
+            jButton4.setVisible(true);
+            jButton5.setVisible(true);
+            jButton6.setVisible(false);
+            jButton7.setVisible(false);
+            jLabel1.setVisible(false);
+            jLabel2.setVisible(false);
+            usernameTextField.setVisible(false);
+
         });
+        jButton7.addActionListener((event)->{
+            jLabel2.setText("" + (Double.parseDouble(usernameTextField.getText()) * Double.parseDouble(jLabel1.getText())) +"");
+            jLabel2.setVisible(true);
+        });
+
 
 
 
@@ -139,16 +176,8 @@ public class ExchangePanel extends JPanel {
 //        return jLabel;
 //    }
 
-//    public void run(){
-//        new Thread(()->{
-//            this.setFocusable(true);
-//            this.requestFocus();
-//
-//
-//
-//
-//
-//        }).start();
-//    }
+    public void run(){
+
+    }
 
 }
